@@ -15,9 +15,9 @@ const linking: LinkingOptions<RootStackParamList> = {
     screens: {
       Root: {
         screens: {
-          Home: {
+          Ligas: {
             screens: {
-              Home: 'one',
+              Ligas: 'one',
             },
           },
           MeuPerfil: {

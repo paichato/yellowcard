@@ -14,7 +14,7 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import Home from '../screens/Home';
+import Ligas from '../screens/Ligas';
 import MeuPerfil from '../screens/MeuPerfil';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
@@ -64,7 +64,7 @@ function BottomTabNavigator() {
       }}>
       <BottomTab.Screen
         name="Ligas"
-        component={Home}
+        component={Ligas}
         options={({ navigation }: RootTabScreenProps<'Ligas'>) => ({
           headerShown:false,
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
