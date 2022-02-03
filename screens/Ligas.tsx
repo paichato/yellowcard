@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import EditScreenInfo from '../components/EditScreenInfo';
@@ -7,6 +7,8 @@ import Colors from '../constants/Colors';
 import { RootTabScreenProps } from '../types';
 
 export default function Ligas({ navigation }: RootTabScreenProps<'Ligas'>) {
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Escolhe a tua Liga</Text>
@@ -15,6 +17,9 @@ export default function Ligas({ navigation }: RootTabScreenProps<'Ligas'>) {
       <TouchableOpacity style={styles.leagueContainer}>
 
       </TouchableOpacity>
+
+      {/* <FlatList  /> */}
+
       {/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
       {/* <EditScreenInfo path="/screens/Ligas.tsx" /> */}
     </View>
