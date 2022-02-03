@@ -61,6 +61,7 @@ function BottomTabNavigator() {
       initialRouteName="Ligas"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarHideOnKeyboard: true,
       }}>
       <BottomTab.Screen
         name="Ligas"

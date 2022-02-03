@@ -1,5 +1,7 @@
-import { FlatList, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import http from '../api/http';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
@@ -8,20 +10,66 @@ import { RootTabScreenProps } from '../types';
 
 export default function Ligas({ navigation }: RootTabScreenProps<'Ligas'>) {
 
+  const fakeData=[{id:0},{id:1},{id:2},{id:3},{id:4},{id:5},{id:6},{id:7}];
+  const [inputFocus,setInputFocus]=useState(false);
+  const [fetching,setFetching]=useState(true);
+  const [leagueData,setLeagueData]=useState([]);
+
+  useEffect(()=>{
+    getLeagues();
+    // console.log(process.env.API_SPORTS);
+    
+  },[])
+
+  const getLeagues=async()=>{
+    
+    http.get('/leagues/').then((res)=>{
+      console.log(res.data.response[0].league);
+      setLeagueData(res.data.response);
+      setFetching(false);
+      
+    }).catch(error=>{
+      console.log(error);
+      setFetching(false);
+    })
+  }
+
+  const handleFocus=()=>{
+    setInputFocus(true);
+  }
+
+  const handleUnfocus=()=>{
+    setInputFocus(false);
+  }
+  const handleSelection=(data)=>{
+console.log(data.league);
+
+  }
+
+  const LeagueItem=({data})=>{
+    return(
+<TouchableOpacity onPress={()=>handleSelection(data)} style={styles.leagueContainer}>
+      <Image style={{height:'80%', width:'80%', overflow:'hidden', borderRadius:34, resizeMode:'contain'}} source={{uri:`${data.league.logo}`}} />
+      <View style={{width:'100%', height:'20%', backgroundColor:'white', alignItems:'center', justifyContent:'center'}}>
+      <Text style={{color:'black', fontSize:hp('1.2%'), textAlign:'center', fontWeight:'bold'}}>{data.league.name}</Text>
+      </View>
+      
+</TouchableOpacity>
+    )
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Escolhe a tua Liga</Text>
-      <TextInput placeholder='pesquisar' placeholderTextColor={Colors.dark.tabIconDefault} style={styles.searchInput} />
+     {!inputFocus && <Text style={styles.title}>Escolhe a tua Liga</Text>}
+      <TextInput returnKeyType="search" onBlur={handleUnfocus} onFocus={handleFocus} placeholder='pesquisar' placeholderTextColor={Colors.dark.tabIconDefault} style={styles.searchInput} />
     
-      <TouchableOpacity style={styles.leagueContainer}>
+      
+      {fetching ? <ActivityIndicator color={Colors.dark.tint} size='large'/> :<View style={{height:hp('40%'),width:wp('100%')}}>
+      <FlatList keyboardShouldPersistTaps={'handled'} numColumns={2} horizontal={false} style={{flex:1}} 
+      contentContainerStyle={styles.leaguesList} data={leagueData} keyExtractor={item=>String(item.league.id)} renderItem={({item})=><LeagueItem data={item}/>} />
 
-      </TouchableOpacity>
+      </View>}
 
-      {/* <FlatList  /> */}
-
-      {/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
-      {/* <EditScreenInfo path="/screens/Ligas.tsx" /> */}
     </View>
   );
 }
@@ -35,6 +83,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 48,
     fontWeight: 'bold',
+    marginHorizontal:20,
   },
   separator: {
     marginVertical: 30,
@@ -56,6 +105,18 @@ const styles = StyleSheet.create({
     borderRadius:34,
     borderColor:Colors.dark.tint,
     borderWidth:5,
+    marginBottom:20,
+    marginHorizontal:20,
+    alignItems:'center',
+    justifyContent:'space-between',
+    overflow: 'hidden',
     
-  }
+  },
+  leaguesList:{
+    // flexDirection:'row',
+    // flexWrap:'wrap',
+    width: '100%',
+    alignItems:'center',
+    justifyContent:'space-between',
+  },
 });
