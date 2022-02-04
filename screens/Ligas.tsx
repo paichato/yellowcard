@@ -1,3 +1,4 @@
+import { useBackHandler } from '@react-native-community/hooks';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Keyboard, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -23,24 +24,23 @@ export default function Ligas({ navigation }: RootTabScreenProps<'Ligas'>) {
   const [leagueData,setLeagueData]=useState([]);
   const [filteredLeagueData,setFilteredLeagueData]=useState([]);
   const [search,setSearch]=useState('');
+  const [perYear,setPerYear]=useState(false);
 
   useEffect(()=>{
     getLeagues();
     // console.log(process.env.API_SPORTS);
     
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
-      // setKeyboardStatus("Keyboard Shown");
-handleFocus();
-    });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
-      // setKeyboardStatus("Keyboard Hidden");
-      handleUnfocus();
-    });
+//     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+// handleFocus();
+//     });
+//     const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+//       handleUnfocus();
+//     });
 
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
+//     return () => {
+//       showSubscription.remove();
+//       hideSubscription.remove();
+//     };
   },[])
 
   useEffect(() => {
@@ -48,6 +48,21 @@ handleFocus();
     filterLeagues()
     // console.log(filteredLeagueData)
 }, [search,leagueData])
+
+useBackHandler(() => {
+  if (inputFocus===true) {
+    // handle it
+    Keyboard.dismiss();
+    handleUnfocus();
+    console.log('sht');
+    
+    return true
+  }else{
+    return false
+  }
+  // let the default thing happen
+  
+})
 
   const getLeagues=async()=>{
     
@@ -69,20 +84,56 @@ handleFocus();
   const handleUnfocus=()=>{
     setInputFocus(false);
   }
+
+  const handlePerYear=()=>{
+    setPerYear(!perYear);
+  }
+
   const handleSelection=(data)=>{
 console.log(data.league);
 
   }
 
   const filterLeagues=()=> {
-    const data = leagueData.filter(data => {
-        let name = data.league.name;
-        // console.log(name);
+    
+
+    if(perYear){
+      const dataRaw=leagueData;
+      // console.log(dataRaw);
+      
+      // console.log(dataRaw);
+      
+      const data = dataRaw.filter((data,i) => {
+        // let name = data.league.name;
+        const seasons=data.seasons[i]?.year;
+        // let year= String(data.seasons);
+        // console.log(seasons);
         
-        let searched = search.trim();
-        return (!search || name.toLowerCase().includes(searched.toLowerCase()))
+        // const processedData=seasons.filter(allseasons=>{
+          let searched = search.trim();
+          // let years=String(allseasons.year);
+          // console.log(allseasons);
+          // console.log(String(seasons?.year).includes(searched));
+          console.log(seasons);
+          
+          
+          return (!search || String(seasons).includes(searched))  
+        // })
+
+        
     })
     setFilteredLeagueData(data)
+    }else{
+      const data = leagueData.filter(data => {
+        let name = data.league.name;
+        // let year= String(data.seasons.year);
+        // console.log(year);
+        
+        let searched = search.trim();
+        return  (!search || name.toLowerCase().includes(searched.toLowerCase()) )
+    })
+    setFilteredLeagueData(data)
+    }
 }
 
   const LeagueItem=({data})=>{
@@ -100,8 +151,12 @@ console.log(data.league);
   return (
     <View style={styles.container}>
      {!inputFocus && <Text style={styles.title}>Escolhe a tua Liga</Text>}
-      <TextInput value={search} onChangeText={(txt) => setSearch(txt)} returnKeyType="search" onBlur={handleUnfocus} 
-      onFocus={handleFocus} placeholder='pesquisar' placeholderTextColor={Colors.dark.tabIconDefault} style={styles.searchInput} />
+     <View style={{width:wp('100%'), alignItems:'center', justifyContent:'center'}}>
+     <TextInput value={search} onChangeText={(txt) => setSearch(txt)} returnKeyType="search" onBlur={handleUnfocus} 
+      onFocus={handleFocus} placeholder={perYear ? 'pesquisar por ano. Ex: 2008' : 'pesquisar liga. Ex: Premier League'} placeholderTextColor={Colors.dark.tabIconDefault} style={styles.searchInput} />
+      <TouchableOpacity onPress={handlePerYear} style={[styles.perYearButton, perYear && {backgroundColor:Colors.dark.primary}]}><Text>Por ano</Text></TouchableOpacity>
+     </View>
+      
     
       
       {fetching ? <ActivityIndicator color={Colors.dark.tint} size='large'/> :<View style={{height:hp('40%'),width:wp('100%')}}>
@@ -119,6 +174,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-around',
+    paddingHorizontal:10,
   },
   title: {
     fontSize: 48,
@@ -159,5 +215,12 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems:'center',
     justifyContent:'space-between',
+  },
+  perYearButton:{
+    borderColor:Colors.dark.primary, borderWidth:2, borderRadius:10, alignSelf:'flex-start', 
+    width:'20%', height:40, alignItems:'center', justifyContent:'center', marginLeft:'10%', marginTop:10
+  },
+  perYearButtonSelected:{
+
   },
 });
