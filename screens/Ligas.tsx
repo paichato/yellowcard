@@ -91,6 +91,7 @@ useBackHandler(() => {
 
   const handleSelection=(data)=>{
 console.log(data.league);
+navigation.navigate('LigaDetalhes',{league:data.league});
 
   }
 
