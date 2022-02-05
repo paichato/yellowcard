@@ -29,7 +29,8 @@ const linking: LinkingOptions<RootStackParamList> = {
       },
       Modal: 'modal',
       NotFound: '*',
-      LigaDetalhes:''
+      LigaDetalhes:'',
+      EquipaDetalhes:'',
     },
   },
 };

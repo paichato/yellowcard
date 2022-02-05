@@ -8,6 +8,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import fakedata from '../lib/fakedata';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Header from '../components/Header';
 // import '../lib/fakedata.tsx'
 
 
@@ -57,6 +58,12 @@ export default function LigaDetalhes({navigation,route}) {
         getLeagueDetails();
     }
 
+    const handleSelectTeam=(data)=>{
+
+
+        navigation.navigate('EquipaDetalhes',{teamData:data})
+    }
+
     const toggleLike=()=>{
         setLiked(!liked);
     }
@@ -75,7 +82,7 @@ export default function LigaDetalhes({navigation,route}) {
         
         return(
             
-            <TouchableOpacity style={[styles.teamCardContainer,data.rank <4 ? {backgroundColor:'green'} : data.rank>15 && {backgroundColor:'rgba(150,0,0,0.5)'}]}>
+            <TouchableOpacity onPress={()=>handleSelectTeam(data)} style={[styles.teamCardContainer,data.rank <4 ? {backgroundColor:'green'} : data.rank>15 && {backgroundColor:'rgba(150,0,0,0.5)'}]}>
             <View>
                 <Image source={{uri:data?.team?.logo}} style={{width:50,height:50, borderRadius:10, overflow:'hidden'}} />
                 <View style={{backgroundColor:'white', borderRadius:5, alignItems:'center', width:'50%', position:'absolute',top:-10, left:-10}}>
@@ -95,23 +102,23 @@ export default function LigaDetalhes({navigation,route}) {
         )
     }
 
-    const Header=()=>{
-        return(
-            <View style={{flexDirection:'row', alignItems:'center', width:'100%', justifyContent:'space-around'}} >
-            <TouchableOpacity onPress={()=>navigation.goBack()}>
-             <Ionicons name="arrow-back" size={24} color={Colors.dark.primary} />   
-            </TouchableOpacity>
+    // const Header=()=>{
+    //     return(
+    //         <View style={{flexDirection:'row', alignItems:'center', width:'100%', justifyContent:'space-around'}} >
+    //         <TouchableOpacity onPress={()=>navigation.goBack()}>
+    //          <Ionicons name="arrow-back" size={24} color={Colors.dark.primary} />   
+    //         </TouchableOpacity>
         
-        <Text style={{color:Colors.dark.tint}}>{league?.name}</Text>
-        <TouchableOpacity onPress={toggleLike}>
-          {!liked ?<MaterialIcons name="favorite-outline" size={24} color={Colors.dark.primary} /> 
-          :
-          <MaterialIcons name="favorite" size={24} color={Colors.dark.primary} />  }   
-            </TouchableOpacity>
+    //     <Text style={{color:Colors.dark.tint}}>{league?.name}</Text>
+    //     <TouchableOpacity onPress={toggleLike}>
+    //       {!liked ?<MaterialIcons name="favorite-outline" size={24} color={Colors.dark.primary} /> 
+    //       :
+    //       <MaterialIcons name="favorite" size={24} color={Colors.dark.primary} />  }   
+    //         </TouchableOpacity>
         
-        </View>
-        )
-    }
+    //     </View>
+    //     )
+    // }
 
     const ConfigBar=()=>{
         return(
@@ -152,7 +159,7 @@ export default function LigaDetalhes({navigation,route}) {
 
   return (
     <View style={styles.container}>
-        <Header/>
+        <Header liked={liked} league={league?.name} toggleLike={toggleLike} navigation={navigation}/>
 
         <Image source={{uri:`${league.logo}`}} style={styles.bigLogo} />
 

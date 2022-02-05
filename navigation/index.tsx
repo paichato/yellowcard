@@ -19,6 +19,7 @@ import MeuPerfil from '../screens/MeuPerfil';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import LigaDetalhes from '../screens/LigaDetalhes';
+import EquipaDetalhes from '../screens/EquipaDetalhes';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -42,6 +43,7 @@ function RootNavigator() {
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Screen name="LigaDetalhes" component={LigaDetalhes} options={{ headerShown: false}} />
+      <Stack.Screen name="EquipaDetalhes" component={EquipaDetalhes} options={{ headerShown: false}} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
