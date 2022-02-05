@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import http from '../api/http';
 import Header from '../components/Header';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -14,7 +14,7 @@ export default function EquipaDetalhes({route,navigation}) {
     const {teamData}=route.params;
 
     const [liked,setLiked]=useState(false);
-    const [errorMessage,setErrorMessage]=useState('');
+    const [errorMessage,setErrorMessage]=useState();
     const [teamResponse,setTeamResponse]=useState([]);
     const [fetching,setFetching]=useState(false);
 
@@ -22,10 +22,17 @@ export default function EquipaDetalhes({route,navigation}) {
         setLiked(!liked);
     }
 
+    useEffect(()=>{
+        getTeamDetails();
+    },[])
+
     const getTeamDetails=async()=>{
+
         setFetching(true);
+        setErrorMessage(undefined);
+        
         http.get(`/teams?id=${teamData?.team?.id}`).then((res)=>{
-            console.log(res.data.response[0].league.standings);
+            console.log(res.data.response);
             if(res.data.response){
                 setTeamResponse(res.data.response[0]);
             
@@ -60,43 +67,53 @@ export default function EquipaDetalhes({route,navigation}) {
 
 <View style={{height:'5%'}} ></View>
 <ScrollView style={{flex:1}} horizontal contentContainerStyle={{alignItems:'center', justifyContent:'space-around'}}>
-<Card title='Ano de fundação' h1='1980' />
-<Card title='País' h1='England' />
+<Card title='Ano de fundação' h1={fetching ? '-' : teamResponse?.team?.founded} />
+<Card title='País' h1={fetching ? '-' : teamResponse?.team?.country} />
 </ScrollView>
 
 <View style={styles.seasonButton}>
-    <Text style={{backgroundColor:Colors.dark.primary, fontWeight:'bold'}}>Estadio</Text>
+    <Text style={{backgroundColor:Colors.dark.primary, fontWeight:'bold'}}>Estádio</Text>
 </View>
 
-<View style={{height:hp('50%'), width:'100%', flexDirection:'row'}}>
-    <View style={{height:'100%', width:'50%', alignItems:'center', justifyContent:'space-around'}}>
-        <View>
-        <Text style={styles.title}>Nome do estadio</Text>
-        <Text style={styles.h2}>Old Trafford</Text>
-        </View>
-
-        {/* <View></View> */}
-    
-        <Image style={{width:'80%',height:'50%',borderRadius:18}} source={{uri:'https://media.api-sports.io/football/venues/556.png'}} />
+{
+    fetching ? 
+        <ActivityIndicator size='large' color={Colors.dark.primary}/>  
+    : errorMessage ? 
+    <View>
+        <Text>{errorMessage}</Text>
+        <TouchableOpacity onPress={getTeamDetails} style={{backgroundColor:Colors.dark.primary,height:hp('50%'), alignItems:'center', justifyContent:'center'}}>
+            <Text style={{color:Colors.dark.background}}>Tentar novamente</Text>
+        </TouchableOpacity>
+    </View> 
+    : 
+    <View style={{height:hp('50%'), width:'100%', flexDirection:'row'}}>
+        <View style={{height:'100%', width:'50%', alignItems:'center', justifyContent:'space-around'}}>
+            <View>
+                <Text style={styles.title}>Nome do estádio</Text>
+                <Text style={styles.h2}>{teamResponse?.venue?.name}</Text>
+            </View>
+        <Image style={styles.venueImage} source={{uri:'https://media.api-sports.io/football/venues/556.png'}} />
     </View>
-    <View style={{height:'100%', width:'50%', alignItems:'center', justifyContent:'space-around', borderTopColor:Colors.dark.primary, borderTopWidth:1}}>
+    <View style={styles.venueDetailsWrapper}>
         <View style={{width:'100%'}} >
-        <Text style={styles.title}>Endereco</Text>
-        <Text style={styles.h2}>Sir Matt Busby Way</Text>
+        <Text style={styles.title}>Endereço</Text>
+        <Text style={styles.h2}>{teamResponse?.venue?.address}</Text>
         </View>
 
         <View style={{width:'100%'}}>
         <Text style={styles.title}>Cidade</Text>
-        <Text style={styles.h2}>Manchester</Text>
+        <Text style={styles.h2}>{teamResponse?.venue?.city}</Text>
         </View>
 
         <View style={{width:'100%'}}>
         <Text style={styles.title}>Capacidade</Text>
-        <Text style={styles.h2}>76212</Text>
+        <Text style={styles.h2}>{teamResponse?.venue?.capacity}</Text>
         </View>
     
     </View>
+  
 </View>
+  }
 
     </View>
   );
@@ -129,11 +146,18 @@ const styles = StyleSheet.create({
     },
     seasonButton:{
         backgroundColor:Colors.dark.primary, alignItems:'center', justifyContent:'center', flexDirection:'row', padding:5,width:100,
-        alignSelf:'flex-start'
+        alignSelf:'flex-start',
+        marginTop:hp('2%')
     },
 
     cardStyle:{
         alignItems:'center',  backgroundColor:Colors.dark.light_gray, padding:20, borderRadius:10, marginHorizontal:10,
-    }
+    },
+    venueDetailsWrapper:{
+        height:'100%', width:'50%', alignItems:'center', justifyContent:'space-around', borderTopColor:Colors.dark.primary, borderTopWidth:1
+    },
+    venueImage:{
+        width:'80%',height:'50%',borderRadius:18
+    },
 
 })

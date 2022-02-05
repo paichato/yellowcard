@@ -16,7 +16,7 @@ export default function LigaDetalhes({navigation,route}) {
 
     const {league}=route.params;
 
-    const [season,setSeason]=useState(2020);
+    const [season,setSeason]=useState(2022);
     const [leagueData,setLeagueData]=useState(fakedata.response[0].league);
     const [tableData,setTableData]=useState(fakedata.response[0].league.standings);
     const [liked,setLiked]=useState(false);
@@ -26,7 +26,7 @@ export default function LigaDetalhes({navigation,route}) {
     const [fetching,setFetching]=useState(false);
     const seasonData=[{id:'2008'},{id:'2009'},{id:'2010'},{id:'2011'},{id:'2012'},{id:'2013'},{id:'2014'},{id:'2015'},{id:'2016'},{id:'2017'},{id:'2018'},{id:'2019'},{id:'2020'},{id:'2021'},{id:'2022'}]
     useEffect(()=>{
-        // getLeagueDetails();
+        getLeagueDetails();
     },[])
 
     const getLeagueDetails=async()=>{
