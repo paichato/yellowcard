@@ -3,7 +3,14 @@ import React from 'react';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 
-export default function Header({navigation,liked, league,toggleLike}) {
+interface HeaderProps{
+  navigation:any;
+  liked:Boolean;
+  league:Object;
+  toggleLike:VoidFunction;
+}
+
+export default function Header({navigation,liked, league,toggleLike}:HeaderProps) {
   return (
     <View style={{flexDirection:'row', alignItems:'center', width:'100%', justifyContent:'space-around'}} >
             <TouchableOpacity onPress={()=>navigation.goBack()}>

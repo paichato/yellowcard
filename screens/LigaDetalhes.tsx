@@ -182,7 +182,7 @@ export default function LigaDetalhes({navigation,route}) {
     <View style={styles.container}>
         <Header  league={league?.name} liked={favoriteLeagues.includes(league)} toggleLike={()=>handleNewFavoriteLeague(league)} navigation={navigation}/>
 
-        <Image source={{uri:`${league.logo}`}} style={styles.bigLogo} />
+        <Image source={{uri:`${league?.logo}`}} style={styles.bigLogo} />
 
         <ConfigBar/>
         

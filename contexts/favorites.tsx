@@ -122,7 +122,7 @@ export default function FavoritesProvider({children}){
               );
     
            
-            setFavoriteLeagues(newArray);
+            setFavoriteTeams(newArray);
         }
         
         console.log(favoriteTeams);

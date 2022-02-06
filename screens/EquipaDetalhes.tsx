@@ -4,6 +4,7 @@ import http from '../api/http';
 import Header from '../components/Header';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Colors from '../constants/Colors';
+import { useFavorites } from '../contexts/favorites';
 
 interface TeamProps{
 
@@ -17,6 +18,7 @@ export default function EquipaDetalhes({route,navigation}) {
     const [errorMessage,setErrorMessage]=useState();
     const [teamResponse,setTeamResponse]=useState([]);
     const [fetching,setFetching]=useState(false);
+    const {favoriteTeams,handleNewFavoriteTeam}=useFavorites();
 
     const toggleLike=()=>{
         setLiked(!liked);
@@ -61,7 +63,7 @@ export default function EquipaDetalhes({route,navigation}) {
 
   return (
     <View style={styles.container}>
-      <Header liked={liked} league={teamData?.team?.name} toggleLike={toggleLike} navigation={navigation}/>
+      <Header liked={favoriteTeams.includes(teamData)} league={teamData?.team?.name} toggleLike={()=>handleNewFavoriteTeam(teamData)} navigation={navigation}/>
       <Image source={{uri:`${teamData?.team?.logo}`}} style={styles.bigLogo} />
       
 

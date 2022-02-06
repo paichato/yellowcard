@@ -18,8 +18,8 @@ export default function MeuPerfil({navigation}) {
 
 
   useEffect(()=>{
-    getFavoriteLeagueList();
-    getFavoriteTeamList();
+    // getFavoriteLeagueList();
+    // getFavoriteTeamList();
   },[])
 
 
