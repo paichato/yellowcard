@@ -63,7 +63,7 @@ export default function EquipaDetalhes({route,navigation}) {
 
   return (
     <View style={styles.container}>
-      <Header liked={favoriteTeams.includes(teamData)} league={teamData?.team?.name} toggleLike={()=>handleNewFavoriteTeam(teamData)} navigation={navigation}/>
+      <Header liked={favoriteTeams?.some(item=> item ===teamData)} league={teamData?.team?.name} toggleLike={()=>handleNewFavoriteTeam(teamData)} navigation={navigation}/>
       <Image source={{uri:`${teamData?.team?.logo}`}} style={styles.bigLogo} />
       
 

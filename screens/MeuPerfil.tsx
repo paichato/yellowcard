@@ -17,10 +17,6 @@ export default function MeuPerfil({navigation}) {
   const {favoriteLeagues,favoriteTeams,getFavoriteLeagueList,getFavoriteTeamList, clearFavorites}=useFavorites();
 
 
-  useEffect(()=>{
-    // getFavoriteLeagueList();
-    // getFavoriteTeamList();
-  },[])
 
 
   const handleSelectedFavLeague=(league)=>{
@@ -28,7 +24,7 @@ export default function MeuPerfil({navigation}) {
   }
 
   const handleSelectedFavTeam=(team)=>{
-    navigation.navigate('LigaDetalhes',{teamData:team});
+    navigation.navigate('EquipaDetalhes',{teamData:team});
   }
 
   const handleClear=async()=>{
@@ -65,8 +61,8 @@ export default function MeuPerfil({navigation}) {
       contentContainerStyle={styles.leaguesList} data={favoriteTeams} renderItem={
         ({item})=>
         <CustomButton 
-        onPress={handleSelectedFavTeam(item)} 
-        text='Serie A'/>
+        onPress={()=>handleSelectedFavTeam(item)} 
+        text={item.team.name}/>
         } />
           
       </View>

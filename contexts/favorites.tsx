@@ -1,4 +1,4 @@
-import React,{ createContext, useContext, useState } from "react";
+import React,{ createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import keys from "../lib/keys";
 
@@ -10,6 +10,13 @@ export default function FavoritesProvider({children}){
     const [favoriteLeagues,setFavoriteLeagues]=useState([]);
     const [favoriteTeams,setFavoriteTeams]=useState([]);
     
+
+    useEffect(()=>{
+        getFavoriteLeagueList();
+        getFavoriteTeamList();
+        console.log('loaded');
+        
+    },[])
 
     const handleNewFavoriteLeague=async(league)=>{
         const newArray=[];
@@ -60,7 +67,7 @@ export default function FavoritesProvider({children}){
               );
     
            
-            setFavoriteLeagues(newArray);
+            setFavoriteLeagues([...newArray]);
         }
         
         console.log(favoriteLeagues);
@@ -136,7 +143,7 @@ export default function FavoritesProvider({children}){
 
     const handleRemoveFavoriteLeague=async(league)=>{
         const data = await AsyncStorage.getItem(keys.storage.leagues);
-        const leagues = data ? JSON.parse(data) : {};
+        const leagues = data ? JSON.parse(data) : [];
 
         
 
@@ -155,7 +162,7 @@ export default function FavoritesProvider({children}){
 
     const handleRemoveFavoriteTeam=async(team)=>{
         const data = await AsyncStorage.getItem(keys.storage.teams);
-        const teams = data ? JSON.parse(data) : {};
+        const teams = data ? JSON.parse(data) : [];
 
         
 
@@ -171,7 +178,7 @@ export default function FavoritesProvider({children}){
 
     const getIsFavoriteLeague=(league)=>{
          AsyncStorage.getItem(keys.storage.leagues).then((data)=>{
-            const leagues = data ? JSON.parse(data) : {};
+            const leagues = data ? JSON.parse(data) : [];
 
             if(data){
                 const exists=leagues.some(item=> item.id ===league.id);
@@ -196,7 +203,7 @@ export default function FavoritesProvider({children}){
     const getIsFavoriteTeam=(team)=>{
         
             AsyncStorage.getItem(keys.storage.teams).then((data)=>{
-                const teams = data ? JSON.parse(data) : {};
+                const teams = data ? JSON.parse(data) : [];
                 if(data){
                     const exists=team.some(item=> item.team.id ===team.team.id);
                     if(exists){
@@ -216,17 +223,23 @@ export default function FavoritesProvider({children}){
         
     }
 
-    const getFavoriteLeagueList=async()=>{
-        const data = await AsyncStorage.getItem(keys.storage.leagues);
-        const leagues = data ? JSON.parse(data) : {};
-        setFavoriteLeagues(leagues);
-        return leagues;
+    const getFavoriteLeagueList=()=>{
+        AsyncStorage.getItem(keys.storage.leagues).then((data)=>{
+            const leagues = data ? JSON.parse(data) : [];
+            setFavoriteLeagues(leagues);
+            console.log('getleagues:',leagues);
+            
+            return leagues;
+        })
+        
     }
-    const getFavoriteTeamList=async()=>{
-        const data = await AsyncStorage.getItem(keys.storage.teams);
-        const teams = data ? JSON.parse(data) : {};
-        setFavoriteTeams(teams);
-        return teams;
+    const getFavoriteTeamList=()=>{
+        AsyncStorage.getItem(keys.storage.teams).then((data)=>{
+            const teams = data ? JSON.parse(data) : [];
+            setFavoriteTeams(teams);
+            return teams;
+        })
+        
     }
 
     const clearFavorites=async()=>{

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, ScrollView, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
@@ -10,6 +10,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import { useFavorites } from '../contexts/favorites';
+import { useFocusEffect } from '@react-navigation/core';
 // import '../lib/fakedata.tsx'
 
 
@@ -17,43 +18,48 @@ export default function LigaDetalhes({navigation,route}) {
 
     const {league}=route.params;
 
-    const [season,setSeason]=useState(2022);
-    const [leagueData,setLeagueData]=useState(fakedata.response[0].league);
-    const [tableData,setTableData]=useState(fakedata.response[0].league.standings);
+    const [season,setSeason]=useState(2021);
+    const [leagueData,setLeagueData]=useState([]);
+    const [tableData,setTableData]=useState([]);
    
     const [isOpen,setIsOpen]=useState(false);
     const [orderAsc, setOrderAsc]=useState(false);
     const [errorMessage,setErrorMessage]=useState('');
     const [fetching,setFetching]=useState(false);
     const {getIsFavoriteLeague,handleNewFavoriteLeague,favoriteLeagues}=useFavorites();
-    const [liked,setLiked]=useState(null);
+    const [favLeagues,setFavLeagues]=useState(favoriteLeagues)
+    const [liked,setLiked]=useState(favoriteLeagues.some(item=> item===league));
     const seasonData=[{id:'2008'},{id:'2009'},{id:'2010'},{id:'2011'},{id:'2012'},{id:'2013'},{id:'2014'},{id:'2015'},{id:'2016'},{id:'2017'},{id:'2018'},{id:'2019'},{id:'2020'},{id:'2021'},{id:'2022'}]
-    useEffect(()=>{
+    
+    useFocusEffect(useCallback(()=>{
         getLeagueDetails();
-        getStatus();
+        // getStatus();
         
         
-    },[])
+    },[]))
 
     const getStatus=()=>{
         // const status=getIsFavoriteLeague();
         // setLiked();
-        const isIt=favoriteLeagues.includes(league);
+        const isIt=favoriteLeagues.some(item=> item===league);
         setLiked(isIt);
-
+        console.log('istIt:',isIt);
+        
         console.log('isliked:',liked);
+        console.log('igual:',favoriteLeagues.filter(item=>item ===league));
+        
         // console.log(favoriteLeagues.includes(league));
         
     }
 
-    useEffect(()=>{
-        getStatus();
-    },[favoriteLeagues])
+    // useEffect(()=>{
+    //     getStatus();
+    // },[favoriteLeagues])
 
     const getLeagueDetails=async()=>{
         setFetching(true);
         http.get(`/standings?season=${season}&league=${league.id}`).then((res)=>{
-            console.log(res.data.response[0].league.standings);
+            // console.log(res.data.response[0].league.standings);
             if(res.data.response){
                 setLeagueData(res.data.response[0].league);
             setTableData(res.data.response[0].league.standings);
