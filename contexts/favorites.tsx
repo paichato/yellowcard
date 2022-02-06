@@ -176,12 +176,16 @@ export default function FavoritesProvider({children}){
             if(data){
                 const exists=leagues.some(item=> item.id ===league.id);
                 if(exists){
+                    console.log('is liked');
                     
                     return true
                 }else{
+                    console.log('is unliked');
+                    
                     return false
                 }
             }else{
+                console.log('is unliked new');
                 return false
             }
         })
@@ -194,7 +198,7 @@ export default function FavoritesProvider({children}){
             AsyncStorage.getItem(keys.storage.teams).then((data)=>{
                 const teams = data ? JSON.parse(data) : {};
                 if(data){
-                    const exists=team.some(item=> item.id ===team.team.id);
+                    const exists=team.some(item=> item.team.id ===team.team.id);
                     if(exists){
                         
                         return true

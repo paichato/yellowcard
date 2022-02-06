@@ -12,7 +12,7 @@ export default function Header({navigation,liked, league,toggleLike}) {
         
         <Text style={{color:Colors.dark.tint}}>{league}</Text>
         <TouchableOpacity onPress={toggleLike}>
-          {liked ?<MaterialIcons name="favorite-outline" size={24} color={Colors.dark.primary} /> 
+          {!liked ?<MaterialIcons name="favorite-outline" size={24} color={Colors.dark.primary} /> 
           :
           <MaterialIcons name="favorite" size={24} color={Colors.dark.primary} />  }   
             </TouchableOpacity>

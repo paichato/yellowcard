@@ -25,17 +25,30 @@ export default function LigaDetalhes({navigation,route}) {
     const [orderAsc, setOrderAsc]=useState(false);
     const [errorMessage,setErrorMessage]=useState('');
     const [fetching,setFetching]=useState(false);
-    const {getIsFavoriteLeague,handleNewFavoriteLeague}=useFavorites();
-    const [liked,setLiked]=useState(getIsFavoriteLeague(league));
+    const {getIsFavoriteLeague,handleNewFavoriteLeague,favoriteLeagues}=useFavorites();
+    const [liked,setLiked]=useState(null);
     const seasonData=[{id:'2008'},{id:'2009'},{id:'2010'},{id:'2011'},{id:'2012'},{id:'2013'},{id:'2014'},{id:'2015'},{id:'2016'},{id:'2017'},{id:'2018'},{id:'2019'},{id:'2020'},{id:'2021'},{id:'2022'}]
     useEffect(()=>{
         getLeagueDetails();
-        const status=getIsFavoriteLeague();
-        setLiked(status);
-        console.log('isliked:',liked);
+        getStatus();
         
         
     },[])
+
+    const getStatus=()=>{
+        // const status=getIsFavoriteLeague();
+        // setLiked();
+        const isIt=favoriteLeagues.includes(league);
+        setLiked(isIt);
+
+        console.log('isliked:',liked);
+        // console.log(favoriteLeagues.includes(league));
+        
+    }
+
+    useEffect(()=>{
+        getStatus();
+    },[favoriteLeagues])
 
     const getLeagueDetails=async()=>{
         setFetching(true);
@@ -167,7 +180,7 @@ export default function LigaDetalhes({navigation,route}) {
 
   return (
     <View style={styles.container}>
-        <Header  league={league?.name} liked={liked} toggleLike={()=>handleNewFavoriteLeague(league)} navigation={navigation}/>
+        <Header  league={league?.name} liked={favoriteLeagues.includes(league)} toggleLike={()=>handleNewFavoriteLeague(league)} navigation={navigation}/>
 
         <Image source={{uri:`${league.logo}`}} style={styles.bigLogo} />
 
