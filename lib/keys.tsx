@@ -1,3 +1,6 @@
 export default{
-    "storage":"@yelllowcard-fut"
+    "storage":{
+        "leagues":"@yelllowcard-leagues",
+        "teams":"@yellowcard-teams"
+    }
 }

@@ -14,22 +14,27 @@ export default function FavoritesProvider({children}){
     const handleNewFavoriteLeague=async(league)=>{
         const newArray=[];
         newArray.push(league);
-        setFavoriteLeagues(oldArray=>[...oldArray,...newArray]);
-        console.log(favoriteLeagues);
+        
+        // console.log(favoriteLeagues);
 
         try{
-            const data = await AsyncStorage.getItem(keys.storage);
+            const data = await AsyncStorage.getItem(keys.storage.leagues);
         const oldLeagues = data ? JSON.parse(data) : {};
 
 
 
         await AsyncStorage.setItem(
-            keys.storage,
+            keys.storage.leagues,
             JSON.stringify({
               ...newArray,
               ...oldLeagues,
             })
           );
+
+        //   setFavoriteLeagues(oldArray=>[...oldArray,...newArray]);
+        setFavoriteLeagues(oldArray=>[...newArray,
+            ...oldLeagues]);
+
         }catch(error){
             throw new Error(error);
         }
@@ -39,8 +44,8 @@ export default function FavoritesProvider({children}){
     const handleNewFavoriteTeam=async(team)=>{
         const newArray=[];
         newArray.push(team);
-        setFavoriteTeams(oldArray=>[...oldArray,...newArray]);
-        console.log(favoriteTeams);
+        // setFavoriteTeams(oldArray=>[...oldArray,...newArray]);
+        // console.log(favoriteTeams);
         
 
         try{
@@ -50,12 +55,13 @@ export default function FavoritesProvider({children}){
 
 
         await AsyncStorage.setItem(
-            keys.storage,
+            keys.storage.teams,
             JSON.stringify({
               ...newArray,
               ...oldTeams,
             })
           );
+          setFavoriteTeams([...oldTeams,...newArray]);
         }catch(error){
             throw new Error(error);
         }
@@ -71,9 +77,10 @@ export default function FavoritesProvider({children}){
         delete leagues[league];
 
         await AsyncStorage.setItem(
-         keys.storage,
+         keys.storage.leagues,
           JSON.stringify(leagues)
         );
+        setFavoriteLeagues(leagues);
     }
 
     const handleRemoveFavoriteTeam=async(team)=>{
@@ -85,13 +92,14 @@ export default function FavoritesProvider({children}){
         delete teams[team];
 
         await AsyncStorage.setItem(
-         keys.storage,
+         keys.storage.teams,
           JSON.stringify(teams)
         );
+        setFavoriteTeams(teams)
     }
 
     const getIsFavoriteLeague=async(league)=>{
-        const data = await AsyncStorage.getItem(keys.storage);
+        const data = await AsyncStorage.getItem(keys.storage.teams);
         const teams = data ? JSON.parse(data) : {};
 
         if(teams.includes(league)){
@@ -102,7 +110,7 @@ export default function FavoritesProvider({children}){
     }
 
     const getIsFavoriteTeam=async(team)=>{
-        const data = await AsyncStorage.getItem(keys.storage);
+        const data = await AsyncStorage.getItem(keys.storage.teams);
         const teams = data ? JSON.parse(data) : {};
 
         if(teams.includes(team)){
@@ -111,10 +119,23 @@ export default function FavoritesProvider({children}){
             return false
         }
     }
+
+    const getFavoriteLeagueList=async()=>{
+        const data = await AsyncStorage.getItem(keys.storage.leagues);
+        const leagues = data ? JSON.parse(data) : {};
+        setFavoriteLeagues(leagues);
+        return leagues;
+    }
+    const getFavoriteTeamList=async()=>{
+        const data = await AsyncStorage.getItem(keys.storage.teams);
+        const teams = data ? JSON.parse(data) : {};
+        setFavoriteTeams(teams);
+        return teams;
+    }
     
     return(
         <FavoritesContext.Provider value={{favoriteLeagues,favoriteTeams,handleNewFavoriteLeague,handleNewFavoriteTeam,
-        handleRemoveFavoriteLeague,handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam}}>
+        handleRemoveFavoriteLeague,handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList}}>
             {children}
         </FavoritesContext.Provider>
     )
@@ -122,7 +143,9 @@ export default function FavoritesProvider({children}){
 
 export function useFavorites(){
     const context=useContext(FavoritesContext);
-    const {favoriteLeagues,favoriteTeams,handleNewFavoriteLeague,handleNewFavoriteTeam,handleRemoveFavoriteLeague,handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam}=context;
+    const {favoriteLeagues,favoriteTeams,handleNewFavoriteLeague,handleNewFavoriteTeam,handleRemoveFavoriteLeague,
+        handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList}=context;
         //custom Context
-    return {favoriteLeagues,favoriteTeams,handleNewFavoriteLeague,handleNewFavoriteTeam,handleRemoveFavoriteLeague,handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam}
+    return {favoriteLeagues,favoriteTeams,handleNewFavoriteLeague,handleNewFavoriteTeam,handleRemoveFavoriteLeague,
+        handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList}
 }

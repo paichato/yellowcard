@@ -4,16 +4,36 @@ import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Colors from '../constants/Colors';
+import { useFavorites } from '../contexts/favorites';
+import { useEffect } from 'react';
 
 
-export default function MeuPerfil() {
+export default function MeuPerfil({navigation}) {
 
 
-  const random=[1,2,3,4,5,6]
 
-  const CustomButton=({text})=>{
+  const random=[1,2,3,4,5,6];
+
+  const {favoriteLeagues,favoriteTeams,getFavoriteLeagueList,getFavoriteTeamList}=useFavorites();
+
+
+  useEffect(()=>{
+    
+    getFavoriteTeamList();
+  },[])
+
+
+  const handleSelectedFavLeague=(league)=>{
+    navigation.navigate('LigaDetalhes',{league});
+  }
+
+  const handleSelectedFavTeam=(team)=>{
+    navigation.navigate('LigaDetalhes',{teamData:team});
+  }
+
+  const CustomButton=({text,...rest})=>{
     return(
-<TouchableOpacity style={{backgroundColor:Colors.dark.primary, borderRadius:5,  alignItems:'center', justifyContent:'center', padding:10, margin:5}} >
+<TouchableOpacity style={{backgroundColor:Colors.dark.primary, borderRadius:5,  alignItems:'center', justifyContent:'center', padding:10, margin:5}} {...rest} >
             <Text style={{color:Colors.dark.background}}>{text}</Text>
           </TouchableOpacity>
     )
@@ -25,14 +45,23 @@ export default function MeuPerfil() {
       <View  style={styles.wrappers}>
           <Text>Ligas</Text>
           <FlatList style={{width:'100%'}} keyboardShouldPersistTaps={'handled'} numColumns={3} horizontal={false} style={{flex:1}} 
-      contentContainerStyle={styles.leaguesList} data={random} renderItem={({item})=><CustomButton text='Serie A'/>} />
+      contentContainerStyle={styles.leaguesList} data={()=>getFavoriteLeagueList()} renderItem={
+        ({item})=><CustomButton 
+        // onPress={()=>handleSelectedFavLeague(item)} 
+        text='Serie A'/>
+        } />
           
       </View>
 
       <View  style={styles.wrappers}>
           <Text>Equipas</Text>
           <FlatList style={{width:'100%'}} keyboardShouldPersistTaps={'handled'} numColumns={3} horizontal={false} style={{flex:1}} 
-      contentContainerStyle={styles.leaguesList} data={random} renderItem={({item})=><CustomButton text='Serie A'/>} />
+      contentContainerStyle={styles.leaguesList} data={()=>getFavoriteTeamList()} renderItem={
+        ({item})=>
+        <CustomButton 
+        // onPress={handleSelectedFavTeam(item)} 
+        text='Serie A'/>
+        } />
           
       </View>
 
