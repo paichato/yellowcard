@@ -9,6 +9,7 @@ import fakedata from '../lib/fakedata';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Header from '../components/Header';
+import { useFavorites } from '../contexts/favorites';
 // import '../lib/fakedata.tsx'
 
 
@@ -19,14 +20,21 @@ export default function LigaDetalhes({navigation,route}) {
     const [season,setSeason]=useState(2022);
     const [leagueData,setLeagueData]=useState(fakedata.response[0].league);
     const [tableData,setTableData]=useState(fakedata.response[0].league.standings);
-    const [liked,setLiked]=useState(false);
+   
     const [isOpen,setIsOpen]=useState(false);
     const [orderAsc, setOrderAsc]=useState(false);
     const [errorMessage,setErrorMessage]=useState('');
     const [fetching,setFetching]=useState(false);
+    const {getIsFavoriteLeague,handleNewFavoriteLeague}=useFavorites();
+    const [liked,setLiked]=useState(getIsFavoriteLeague(league));
     const seasonData=[{id:'2008'},{id:'2009'},{id:'2010'},{id:'2011'},{id:'2012'},{id:'2013'},{id:'2014'},{id:'2015'},{id:'2016'},{id:'2017'},{id:'2018'},{id:'2019'},{id:'2020'},{id:'2021'},{id:'2022'}]
     useEffect(()=>{
         getLeagueDetails();
+        const status=getIsFavoriteLeague();
+        setLiked(status);
+        console.log('isliked:',liked);
+        
+        
     },[])
 
     const getLeagueDetails=async()=>{
@@ -159,7 +167,7 @@ export default function LigaDetalhes({navigation,route}) {
 
   return (
     <View style={styles.container}>
-        <Header liked={liked} league={league?.name} toggleLike={toggleLike} navigation={navigation}/>
+        <Header  league={league?.name} liked={liked} toggleLike={()=>handleNewFavoriteLeague(league)} navigation={navigation}/>
 
         <Image source={{uri:`${league.logo}`}} style={styles.bigLogo} />
 

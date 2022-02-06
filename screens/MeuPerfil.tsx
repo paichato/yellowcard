@@ -14,11 +14,11 @@ export default function MeuPerfil({navigation}) {
 
   const random=[1,2,3,4,5,6];
 
-  const {favoriteLeagues,favoriteTeams,getFavoriteLeagueList,getFavoriteTeamList}=useFavorites();
+  const {favoriteLeagues,favoriteTeams,getFavoriteLeagueList,getFavoriteTeamList, clearFavorites}=useFavorites();
 
 
   useEffect(()=>{
-    
+    getFavoriteLeagueList();
     getFavoriteTeamList();
   },[])
 
@@ -29,6 +29,12 @@ export default function MeuPerfil({navigation}) {
 
   const handleSelectedFavTeam=(team)=>{
     navigation.navigate('LigaDetalhes',{teamData:team});
+  }
+
+  const handleClear=async()=>{
+    clearFavorites();
+    getFavoriteLeagueList();
+    getFavoriteTeamList();
   }
 
   const CustomButton=({text,...rest})=>{
@@ -45,10 +51,10 @@ export default function MeuPerfil({navigation}) {
       <View  style={styles.wrappers}>
           <Text>Ligas</Text>
           <FlatList style={{width:'100%'}} keyboardShouldPersistTaps={'handled'} numColumns={3} horizontal={false} style={{flex:1}} 
-      contentContainerStyle={styles.leaguesList} data={()=>getFavoriteLeagueList()} renderItem={
+      contentContainerStyle={styles.leaguesList} data={favoriteLeagues} renderItem={
         ({item})=><CustomButton 
-        // onPress={()=>handleSelectedFavLeague(item)} 
-        text='Serie A'/>
+        onPress={()=>handleSelectedFavLeague(item)} 
+        text={item.name}/>
         } />
           
       </View>
@@ -56,16 +62,16 @@ export default function MeuPerfil({navigation}) {
       <View  style={styles.wrappers}>
           <Text>Equipas</Text>
           <FlatList style={{width:'100%'}} keyboardShouldPersistTaps={'handled'} numColumns={3} horizontal={false} style={{flex:1}} 
-      contentContainerStyle={styles.leaguesList} data={()=>getFavoriteTeamList()} renderItem={
+      contentContainerStyle={styles.leaguesList} data={favoriteTeams} renderItem={
         ({item})=>
         <CustomButton 
-        // onPress={handleSelectedFavTeam(item)} 
+        onPress={handleSelectedFavTeam(item)} 
         text='Serie A'/>
         } />
           
       </View>
 
-      <CustomButton text='Apagar Favoritos' />
+      <CustomButton onPress={handleClear} text='Apagar Favoritos' />
       
     </View>
   );

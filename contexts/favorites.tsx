@@ -21,19 +21,50 @@ export default function FavoritesProvider({children}){
             const data = await AsyncStorage.getItem(keys.storage.leagues);
         const oldLeagues = data ? JSON.parse(data) : {};
 
+        
 
+        if(data){
+            console.log('here on something');
+            console.log(oldLeagues);
+            console.log(data);
+            
+            
 
-        await AsyncStorage.setItem(
-            keys.storage.leagues,
-            JSON.stringify({
-              ...newArray,
-              ...oldLeagues,
-            })
-          );
+            const exists=oldLeagues.some(item=>item.id ===league.id);
 
-        //   setFavoriteLeagues(oldArray=>[...oldArray,...newArray]);
-        setFavoriteLeagues(oldArray=>[...newArray,
-            ...oldLeagues]);
+            if(exists){
+                console.log('ja existe');
+                handleRemoveFavoriteLeague(league);
+                
+            }
+            
+            await AsyncStorage.setItem(
+                keys.storage.leagues,
+                JSON.stringify([
+                  ...newArray,
+                  ...oldLeagues,
+                ])
+              );
+    
+           
+            setFavoriteLeagues([...newArray,...oldLeagues]);
+        }else{
+            console.log('her on empty');
+            
+            await AsyncStorage.setItem(
+                keys.storage.leagues,
+                JSON.stringify(
+                  newArray
+                 
+                )
+              );
+    
+           
+            setFavoriteLeagues(newArray);
+        }
+        
+        console.log(favoriteLeagues);
+        
 
         }catch(error){
             throw new Error(error);
@@ -49,19 +80,54 @@ export default function FavoritesProvider({children}){
         
 
         try{
-            const data = await AsyncStorage.getItem(keys.storage);
-            const oldTeams = data ? JSON.parse(data) : {};
+            const data = await AsyncStorage.getItem(keys.storage.teams);
+        const oldTeams = data ? JSON.parse(data) : {};
 
+        
 
+        if(data){
+            console.log('here on something');
+            console.log(oldTeams);
+            console.log(data);
+            
+            
 
-        await AsyncStorage.setItem(
-            keys.storage.teams,
-            JSON.stringify({
-              ...newArray,
-              ...oldTeams,
-            })
-          );
-          setFavoriteTeams([...oldTeams,...newArray]);
+            const exists=oldTeams.some(item=>item.team.id ===team.team.id);
+
+            if(exists){
+                console.log('ja existe');
+                handleRemoveFavoriteLeague(team);
+                
+            }
+            
+            await AsyncStorage.setItem(
+                keys.storage.teams,
+                JSON.stringify([
+                  ...newArray,
+                  ...oldTeams,
+                ])
+              );
+    
+           
+            setFavoriteTeams([...newArray,...oldTeams]);
+        }else{
+            console.log('her on empty');
+            
+            await AsyncStorage.setItem(
+                keys.storage.teams,
+                JSON.stringify(
+                  newArray
+                 
+                )
+              );
+    
+           
+            setFavoriteLeagues(newArray);
+        }
+        
+        console.log(favoriteTeams);
+        
+
         }catch(error){
             throw new Error(error);
         }
@@ -69,55 +135,81 @@ export default function FavoritesProvider({children}){
     }
 
     const handleRemoveFavoriteLeague=async(league)=>{
-        const data = await AsyncStorage.getItem(keys.storage);
+        const data = await AsyncStorage.getItem(keys.storage.leagues);
         const leagues = data ? JSON.parse(data) : {};
 
         
 
-        delete leagues[league];
+        // delete leagues[league];
+
+        const newLeagues=leagues.filter(item=>item.id !==league.id);
 
         await AsyncStorage.setItem(
          keys.storage.leagues,
-          JSON.stringify(leagues)
+          JSON.stringify(newLeagues)
         );
-        setFavoriteLeagues(leagues);
+        setFavoriteLeagues(newLeagues);
+        console.log(newLeagues);
+        
     }
 
     const handleRemoveFavoriteTeam=async(team)=>{
-        const data = await AsyncStorage.getItem(keys.storage);
+        const data = await AsyncStorage.getItem(keys.storage.teams);
         const teams = data ? JSON.parse(data) : {};
 
         
 
-        delete teams[team];
+        // delete teams[team];
+        const newTeams=teams.filter(item=>item.team.id !==team.team.id);
 
         await AsyncStorage.setItem(
          keys.storage.teams,
-          JSON.stringify(teams)
+          JSON.stringify(newTeams)
         );
-        setFavoriteTeams(teams)
+        setFavoriteTeams(newTeams)
     }
 
-    const getIsFavoriteLeague=async(league)=>{
-        const data = await AsyncStorage.getItem(keys.storage.teams);
-        const teams = data ? JSON.parse(data) : {};
+    const getIsFavoriteLeague=(league)=>{
+         AsyncStorage.getItem(keys.storage.leagues).then((data)=>{
+            const leagues = data ? JSON.parse(data) : {};
 
-        if(teams.includes(league)){
-            return true
-        }else{
-            return false
-        }
+            if(data){
+                const exists=leagues.some(item=> item.id ===league.id);
+                if(exists){
+                    
+                    return true
+                }else{
+                    return false
+                }
+            }else{
+                return false
+            }
+        })
+        
+        
     }
 
-    const getIsFavoriteTeam=async(team)=>{
-        const data = await AsyncStorage.getItem(keys.storage.teams);
-        const teams = data ? JSON.parse(data) : {};
+    const getIsFavoriteTeam=(team)=>{
+        
+            AsyncStorage.getItem(keys.storage.teams).then((data)=>{
+                const teams = data ? JSON.parse(data) : {};
+                if(data){
+                    const exists=team.some(item=> item.id ===team.team.id);
+                    if(exists){
+                        
+                        return true
+                    }else{
+                        return false
+                    }
+                }else{
+                    return false
+                }
+            }).catch(error=>console.log('error:',error)
+            )
+        
+        
 
-        if(teams.includes(team)){
-            return true
-        }else{
-            return false
-        }
+        
     }
 
     const getFavoriteLeagueList=async()=>{
@@ -132,10 +224,25 @@ export default function FavoritesProvider({children}){
         setFavoriteTeams(teams);
         return teams;
     }
+
+    const clearFavorites=async()=>{
+        try {
+            console.log('removendo..');
+            
+            await AsyncStorage.multiRemove([keys.storage.leagues,keys.storage.teams]);
+            console.log('removidos');
+            
+          } catch(e) {
+            // remove error
+            console.log('erro ao remover', e);
+            
+          }
+    }
     
     return(
         <FavoritesContext.Provider value={{favoriteLeagues,favoriteTeams,handleNewFavoriteLeague,handleNewFavoriteTeam,
-        handleRemoveFavoriteLeague,handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList}}>
+        handleRemoveFavoriteLeague,handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList,
+        clearFavorites}}>
             {children}
         </FavoritesContext.Provider>
     )
@@ -144,8 +251,8 @@ export default function FavoritesProvider({children}){
 export function useFavorites(){
     const context=useContext(FavoritesContext);
     const {favoriteLeagues,favoriteTeams,handleNewFavoriteLeague,handleNewFavoriteTeam,handleRemoveFavoriteLeague,
-        handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList}=context;
+        handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList,clearFavorites}=context;
         //custom Context
     return {favoriteLeagues,favoriteTeams,handleNewFavoriteLeague,handleNewFavoriteTeam,handleRemoveFavoriteLeague,
-        handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList}
+        handleRemoveFavoriteTeam,getIsFavoriteLeague,getIsFavoriteTeam,getFavoriteLeagueList,getFavoriteTeamList,clearFavorites}
 }
